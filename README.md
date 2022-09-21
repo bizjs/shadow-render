@@ -35,4 +35,7 @@ pnpm test -- -- -u
 ```bash
 # 构建
 pnpm build
+
+# 发布
+pnpm pub
 ```

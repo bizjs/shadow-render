@@ -9,9 +9,23 @@
 
 ```ts
 import { ShadowRender } from '@bizjs/shadow-render-react';
+import type { ShadowRenderRef } from '@bizjs/shadow-render-react';
 
 function App() {
   return <ShadowRender htmlContent={`<h1>Hello</h1>`} />;
+}
+
+// 操作 Shadow DOM 的内容
+function App2() {
+  const shadowRenderRef = useRef<ShadowRenderRef>;
+
+  useEffect(() => {
+    // 具体的内容 dom
+    const contentDom = shadowRenderRef.getContentDOM();
+    console.log(contentDom);
+  }, []);
+
+  return <ShadowRender ref={shadowRenderRef} htmlContent={`<h1>Hello</h1>`} />;
 }
 ```
 

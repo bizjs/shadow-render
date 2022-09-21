@@ -34,11 +34,11 @@ describe('ShadowRender test', () => {
   });
 
   test('getContentDOM will return content dom', async () => {
-    const contentRef: RefObject<ShadowRenderRef> = createRef();
-    render(<ShadowRender htmlContent="<h1>Hello</h1>" ref={contentRef} />);
+    const ref: RefObject<ShadowRenderRef> = createRef();
+    render(<ShadowRender htmlContent="<h1>Hello</h1>" ref={ref} />);
 
     await waitFor(() => screen.findByShadowText('Hello'));
-    expect(contentRef.current!.getContentDOM().innerHTML).toBe('<h1>Hello</h1>');
+    expect(ref.current!.getContentDOM().innerHTML).toBe('<h1>Hello</h1>');
   });
 
   test('set dynamic styles ok', async () => {
