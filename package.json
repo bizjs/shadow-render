@@ -4,10 +4,10 @@
   "description": "Render some html in shadow DOM bypass a component, support more frameworks.",
   "scripts": {
     "dev:react": "pnpm --filter @bizjs/shadow-render-react run dev",
-    "build": "pnpm --filter \"*\" build",
-    "test": "pnpm --filter \"*\" test",
-    "test:cov": "pnpm --filter \"*\" test:cov",
-    "pub": "pnpm build && pnpm test && pnpm --filter \"*\" publish"
+    "build": "pnpm --filter \"packages/*\" build",
+    "test": "pnpm --filter \"packages/*\" test",
+    "test:cov": "pnpm --filter \"packages/*\" test:cov",
+    "pub": "pnpm build && pnpm test && pnpm --filter \"packages/*\" publish"
   },
   "keywords": [],
   "author": "",
