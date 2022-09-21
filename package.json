@@ -1,0 +1,22 @@
+{
+  "name": "shadow-render",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:react": "pnpm --filter @bizjs/shadow-render-react run dev",
+    "build": "pnpm --filter \"*\" build",
+    "test": "pnpm --filter \"*\" test",
+    "test:cov": "pnpm --filter \"*\" test:cov"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^29.0.3",
+    "@types/react": "^18.0.20",
+    "father": "^4.0.4",
+    "jest": "^29.0.3",
+    "ts-jest": "^29.0.1"
+  }
+}
