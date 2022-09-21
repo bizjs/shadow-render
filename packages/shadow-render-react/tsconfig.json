@@ -4,7 +4,7 @@
     "declaration": true,
     "skipLibCheck": true,
     "baseUrl": "./",
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "esModuleInterop": true
   }
 }

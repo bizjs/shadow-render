@@ -1,3 +1,3 @@
 export { ShadowRender } from './ShadowRender';
 
-export type { ShadowRenderProps, HtmlCustomStyle } from './ShadowRender';
+export type { ShadowRenderRef, ShadowRenderProps, HtmlCustomStyle } from './ShadowRender';

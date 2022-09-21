@@ -5,7 +5,7 @@
  */
 export function removeNodeItems(node: ShadowRoot | HTMLElement, selector: string) {
   node.querySelectorAll(selector).forEach((el) => {
-    node.removeChild(el);
+    el.parentNode!.removeChild(el);
   });
 }
 

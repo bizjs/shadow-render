@@ -26,6 +26,8 @@ pnpm test
 # 测试覆盖率
 pnpm test:cov
 
+# 更新快照
+pnpm test -- -- -u
 ```
 
 ## 构建 & 发布

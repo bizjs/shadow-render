@@ -3,6 +3,8 @@ import { removeNodeItems, setAttributes } from './utils';
 
 export type HtmlCustomStyle = { href: string } | string;
 
+export type ShadowRenderRef = { getContentDOM: () => HTMLDivElement };
+
 export type ShadowRenderProps = {
   className?: string;
   styles?: HtmlCustomStyle[];
@@ -12,8 +14,6 @@ export type ShadowRenderProps = {
 // 样式常量
 const ROOT_CLASS = `biz-shadow-react`;
 const STYLE_CLASS = `${ROOT_CLASS}-link-style`;
-
-type ShadowRenderRef = { getContentDOM: () => HTMLDivElement };
 
 export const ShadowRender = forwardRef<ShadowRenderRef, ShadowRenderProps>((props: ShadowRenderProps, ref) => {
   const { htmlContent, styles = [], className } = props;
@@ -37,12 +37,13 @@ export const ShadowRender = forwardRef<ShadowRenderRef, ShadowRenderProps>((prop
 
       // 添加放内容的容器
       const contentEl = document.createElement('div');
-      contentEl.setAttribute('class', 'biz-html-content-box');
+      setAttributes(contentEl, { class: `${ROOT_CLASS}-content` });
       contentRef.current = contentEl;
       shadowRootRef.current.appendChild(contentEl);
     }
 
     const shadowRootDom = shadowRootRef.current!;
+
     // 处理样式
     // 1. 先清理
     removeNodeItems(shadowRootDom, `.${STYLE_CLASS}`);
@@ -64,7 +65,7 @@ export const ShadowRender = forwardRef<ShadowRenderRef, ShadowRenderProps>((prop
     contentRef.current!.innerHTML = htmlContent;
   }, [htmlContent, styles]);
 
-  const divClass = `${ROOT_CLASS} ${className}`;
+  const divClass = `${ROOT_CLASS} ${className || ''}`;
 
   return <div className={divClass} ref={divRef}></div>;
 });
