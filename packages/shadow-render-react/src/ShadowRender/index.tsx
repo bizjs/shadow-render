@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { removeNodeItems, setAttributes } from './utils';
 
 export type HtmlCustomStyle = { href: string } | string;
