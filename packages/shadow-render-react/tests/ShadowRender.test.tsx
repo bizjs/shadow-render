@@ -41,6 +41,23 @@ describe('ShadowRender test', () => {
     expect(ref.current!.getContentDOM().innerHTML).toBe('<h1>Hello</h1>');
   });
 
+  test('htmlContent value maybe an ReactElement', async () => {
+    const ref: RefObject<ShadowRenderRef> = createRef();
+    render(<ShadowRender htmlContent={<h1>Hello</h1>} ref={ref} />);
+
+    await waitFor(() => screen.findByShadowText('Hello'));
+    expect(ref.current!.getContentDOM().innerHTML).toBe('<h1>Hello</h1>');
+  });
+
+  test('htmlContent value maybe an Component', async () => {
+    const ref: RefObject<ShadowRenderRef> = createRef();
+    const Component = () => <h1>Hello</h1>;
+    render(<ShadowRender htmlContent={<Component />} ref={ref} />);
+
+    await waitFor(() => screen.findByShadowText('Hello'));
+    expect(ref.current!.getContentDOM().innerHTML).toBe('<h1>Hello</h1>');
+  });
+
   test('set dynamic styles ok', async () => {
     render(
       <ShadowRender

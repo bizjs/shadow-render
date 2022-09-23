@@ -1,4 +1,6 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, isValidElement, useEffect, useImperativeHandle, useRef } from 'react';
+import type { ReactNode } from 'react';
+import { render, unmountComponentAtNode } from 'react-dom';
 import { removeNodeItems, setAttributes } from './utils';
 
 export type HtmlCustomStyle = { href: string } | string;
@@ -8,7 +10,7 @@ export type ShadowRenderRef = { getContentDOM: () => HTMLDivElement };
 export type ShadowRenderProps = {
   className?: string;
   styles?: HtmlCustomStyle[];
-  htmlContent: string;
+  htmlContent: string | ReactNode;
 };
 
 // 样式常量
@@ -60,10 +62,25 @@ export const ShadowRender = forwardRef<ShadowRenderRef, ShadowRenderProps>((prop
         shadowRootDom.insertBefore(linkEl, contentRef.current!);
       }
     });
+  }, [styles]);
 
+  useEffect(() => {
     // 处理内容
-    contentRef.current!.innerHTML = htmlContent;
-  }, [htmlContent, styles]);
+    const isReactElement = isValidElement(htmlContent);
+
+    if (typeof htmlContent === 'string') {
+      contentRef.current!.innerHTML = htmlContent;
+    } else if (isReactElement) {
+      render(htmlContent, contentRef.current!);
+    } else {
+      console.warn('htmlContent should must be one of [string, ReactNode] type');
+    }
+
+    return () => {
+      // 使用render函数在卸载后延时器事件类相关副作用需清理
+      unmountComponentAtNode(contentRef.current!);
+    };
+  }, [htmlContent]);
 
   const divClass = `${ROOT_CLASS} ${className || ''}`;
 
