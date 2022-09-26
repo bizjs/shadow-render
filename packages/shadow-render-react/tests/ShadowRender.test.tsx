@@ -38,24 +38,40 @@ describe('ShadowRender test', () => {
     render(<ShadowRender htmlContent="<h1>Hello</h1>" ref={ref} />);
 
     await waitFor(() => screen.findByShadowText('Hello'));
-    expect(ref.current!.getContentDOM().innerHTML).toBe('<h1>Hello</h1>');
+    expect(ref.current!.getContentDOM().innerHTML).toBe('<div><h1>Hello</h1></div>');
   });
 
   test('htmlContent value maybe an ReactElement', async () => {
     const ref: RefObject<ShadowRenderRef> = createRef();
-    render(<ShadowRender htmlContent={<h1>Hello</h1>} ref={ref} />);
+    render(
+      <ShadowRender ref={ref}>
+        <h1>Hello</h1>
+      </ShadowRender>
+    );
 
     await waitFor(() => screen.findByShadowText('Hello'));
-    expect(ref.current!.getContentDOM().innerHTML).toBe('<h1>Hello</h1>');
+    expect(ref.current!.getContentDOM().innerHTML).toBe('<div><h1>Hello</h1></div>');
+  });
+
+  test('when htmlContent and children exist at the same time will render htmlContent', async () => {
+    const ref: RefObject<ShadowRenderRef> = createRef();
+    render(<ShadowRender htmlContent="<h1>htmlContent</h1>" ref={ref} children={<h1>children</h1>} />);
+
+    await waitFor(() => screen.findByShadowText('htmlContent'));
+    expect(ref.current!.getContentDOM().innerHTML).toBe('<div><h1>htmlContent</h1></div>');
   });
 
   test('htmlContent value maybe an Component', async () => {
     const ref: RefObject<ShadowRenderRef> = createRef();
     const Component = () => <h1>Hello</h1>;
-    render(<ShadowRender htmlContent={<Component />} ref={ref} />);
+    render(
+      <ShadowRender ref={ref}>
+        <Component />
+      </ShadowRender>
+    );
 
     await waitFor(() => screen.findByShadowText('Hello'));
-    expect(ref.current!.getContentDOM().innerHTML).toBe('<h1>Hello</h1>');
+    expect(ref.current!.getContentDOM().innerHTML).toBe('<div><h1>Hello</h1></div>');
   });
 
   test('set dynamic styles ok', async () => {

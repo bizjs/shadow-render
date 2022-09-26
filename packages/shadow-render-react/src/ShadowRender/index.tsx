@@ -1,4 +1,4 @@
-import React, { forwardRef, isValidElement, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { removeNodeItems, setAttributes } from './utils';
@@ -10,7 +10,9 @@ export type ShadowRenderRef = { getContentDOM: () => HTMLDivElement };
 export type ShadowRenderProps = {
   className?: string;
   styles?: HtmlCustomStyle[];
-  htmlContent: string | ReactNode;
+  htmlContent?: string;
+  children?: ReactNode;
+  innerRootProps?: React.HTMLAttributes<HTMLDivElement>;
 };
 
 // 样式常量
@@ -18,12 +20,11 @@ const ROOT_CLASS = `biz-shadow-react`;
 const STYLE_CLASS = `${ROOT_CLASS}-link-style`;
 
 export const ShadowRender = forwardRef<ShadowRenderRef, ShadowRenderProps>((props: ShadowRenderProps, ref) => {
-  const { htmlContent, styles = [], className } = props;
+  const { htmlContent, styles = [], className, children, innerRootProps = {} } = props;
 
   const shadowRootRef = useRef<ShadowRoot>();
   const divRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>();
-
   useImperativeHandle(ref, () => {
     return {
       getContentDOM() {
@@ -66,14 +67,12 @@ export const ShadowRender = forwardRef<ShadowRenderRef, ShadowRenderProps>((prop
 
   useEffect(() => {
     // 处理内容
-    const isReactElement = isValidElement(htmlContent);
-
-    if (typeof htmlContent === 'string') {
-      contentRef.current!.innerHTML = htmlContent;
-    } else if (isReactElement) {
-      render(htmlContent, contentRef.current!);
+    // htmlContent优先级高于children
+    // 当htmlContent为undefined时,渲染children
+    if (htmlContent !== undefined) {
+      render(<div {...innerRootProps} dangerouslySetInnerHTML={{ __html: htmlContent }} />, contentRef.current!);
     } else {
-      console.warn('htmlContent should must be one of [string, ReactNode] type');
+      render(<div {...innerRootProps}>{children}</div>, contentRef.current!);
     }
 
     return () => {
