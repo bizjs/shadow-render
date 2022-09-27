@@ -61,7 +61,6 @@ export async function render(children: ReactNode, container: HTMLElement) {
 /**
  * 卸载container中的React状态
  * @param container dom节点
- * @param isUnMount 是否是卸载组件
  */
 export function unMoutReactByNode(container: HTMLElement) {
   const reactRoot = reactRootMap.get(container);
