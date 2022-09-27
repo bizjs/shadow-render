@@ -1,5 +1,5 @@
 import { ShadowRender, ShadowRenderRef } from '../src';
-import { render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 // 测试 shadow dom 需要
 import { screen } from 'shadow-dom-testing-library';
 import React, { createRef, RefObject } from 'react';
@@ -72,6 +72,39 @@ describe('ShadowRender test', () => {
 
     await waitFor(() => screen.findByShadowText('Hello'));
     expect(ref.current!.getContentDOM().innerHTML).toBe('<h1>Hello</h1>');
+  });
+
+  test('when-htmlContent-and-children-values-change-be-ok', async () => {
+    const ref: RefObject<ShadowRenderRef> = createRef();
+    const Component = () => {
+      const [count, setCount] = React.useState(0);
+      const [htmlContent, setContent] = React.useState<string | undefined>(undefined);
+      return (
+        <>
+          <button id="increment" onClick={() => setCount(count + 1)}>
+            add
+          </button>
+          <button id="hiddenContent" onClick={() => setContent(undefined)}>
+            hidden
+          </button>
+          <button id="showContent" onClick={() => setContent('hello')}>
+            show
+          </button>
+          <ShadowRender ref={ref} htmlContent={htmlContent} children={<div>{count}</div>}></ShadowRender>
+        </>
+      );
+    };
+    render(<Component />);
+
+    await waitFor(() => screen.findByShadowText('0'));
+    fireEvent.click(screen.getByText('add'));
+    await waitFor(() => screen.findByShadowText('1'));
+    fireEvent.click(screen.getByText('show'));
+    await waitFor(() => screen.findByShadowText('hello'));
+    fireEvent.click(screen.getByText('add'));
+    await waitFor(() => screen.findByShadowText('hello'));
+    fireEvent.click(screen.getByText('hidden'));
+    await waitFor(() => screen.findByShadowText('2'));
   });
 
   test('set dynamic styles ok', async () => {
