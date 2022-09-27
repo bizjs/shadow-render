@@ -8,9 +8,9 @@ export default function Layout() {
         <li>
           <Link to="/">ShadowRender for React</Link>
         </li>
-        {/* <li>
+        <li>
           <Link to="/docs">Docs</Link>
-        </li> */}
+        </li>
       </ul>
       <hr />
       <Outlet />
