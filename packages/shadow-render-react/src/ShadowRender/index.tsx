@@ -1,7 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import type { ReactNode } from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
-import { removeNodeItems, setAttributes } from './utils';
+import type { PropsWithChildren } from 'react';
+import { removeNodeItems, setAttributes, render, unMoutReactByNode } from './utils';
 
 export type HtmlCustomStyle = { href: string } | string;
 
@@ -11,20 +10,25 @@ export type ShadowRenderProps = {
   className?: string;
   styles?: HtmlCustomStyle[];
   htmlContent?: string;
-  children?: ReactNode;
-  innerRootProps?: React.HTMLAttributes<HTMLDivElement>;
 };
 
 // 样式常量
 const ROOT_CLASS = `biz-shadow-react`;
 const STYLE_CLASS = `${ROOT_CLASS}-link-style`;
 
-export const ShadowRender = forwardRef<ShadowRenderRef, ShadowRenderProps>((props: ShadowRenderProps, ref) => {
-  const { htmlContent, styles = [], className, children, innerRootProps = {} } = props;
+export const ShadowRender = forwardRef<ShadowRenderRef, PropsWithChildren<ShadowRenderProps>>((props, ref) => {
+  const { htmlContent, styles = [], className, children } = props;
 
   const shadowRootRef = useRef<ShadowRoot>();
   const divRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>();
+
+  // shadowDOM内部的根节点
+  const contentElementRef = useRef<HTMLDivElement>();
+
+  // 记录上次的状态是否是通过react API渲染
+  const renderByReactRef = useRef(false);
+
   useImperativeHandle(ref, () => {
     return {
       getContentDOM() {
@@ -40,6 +44,7 @@ export const ShadowRender = forwardRef<ShadowRenderRef, ShadowRenderProps>((prop
 
       // 添加放内容的容器
       const contentEl = document.createElement('div');
+      contentElementRef.current = contentEl;
       setAttributes(contentEl, { class: `${ROOT_CLASS}-content` });
       contentRef.current = contentEl;
       shadowRootRef.current.appendChild(contentEl);
@@ -65,21 +70,47 @@ export const ShadowRender = forwardRef<ShadowRenderRef, ShadowRenderProps>((prop
     });
   }, [styles]);
 
+  // 处理内容
+  // htmlContent优先级高于children
+  // 当htmlContent为undefined时,渲染children
   useEffect(() => {
-    // 处理内容
-    // htmlContent优先级高于children
-    // 当htmlContent为undefined时,渲染children
-    if (htmlContent !== undefined) {
-      render(<div {...innerRootProps} dangerouslySetInnerHTML={{ __html: htmlContent }} />, contentRef.current!);
+    const hasHTMLContent = htmlContent !== undefined;
+
+    if (hasHTMLContent) {
+      if (renderByReactRef.current) {
+        // 上次是使用react渲染则先卸载
+        unMoutReactByNode(contentRef.current!);
+      }
+
+      /**
+       * 解决unmout异步问题
+       * 但是此处仍然存在数据竞争
+       * @problem React仍会抛出警告,目前不影响执行的结果，但可能存在风险
+       */
+      Promise.resolve().then(() => {
+        contentRef.current!.innerHTML = htmlContent;
+      });
     } else {
-      render(<div {...innerRootProps}>{children}</div>, contentRef.current!);
+      const needmountByPreRenderStatus = !renderByReactRef.current;
+      if (needmountByPreRenderStatus) {
+        unMoutReactByNode(contentRef.current!);
+      }
+      render(children, contentElementRef.current!);
     }
 
+    renderByReactRef.current = !hasHTMLContent;
+  }, [htmlContent, children]);
+
+  useEffect(() => {
+    // 卸载副作用 考虑到react18的useEffect在update时候回cleanp
+    // 故将update与unmount逻辑分离
     return () => {
       // 使用render函数在卸载后延时器事件类相关副作用需清理
-      unmountComponentAtNode(contentRef.current!);
+      if (renderByReactRef.current) {
+        unMoutReactByNode(contentElementRef.current!);
+      }
     };
-  }, [htmlContent]);
+  }, []);
 
   const divClass = `${ROOT_CLASS} ${className || ''}`;
 
