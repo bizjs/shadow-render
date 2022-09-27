@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Render some html in shadow DOM bypass a component, support more frameworks.",
   "scripts": {
+    "demo": "cd examples && pnpm start",
     "dev:react": "pnpm --filter @bizjs/shadow-render-react run dev",
     "build": "pnpm --filter \"./packages/*\" build",
     "test": "pnpm --filter \"./packages/*\" test",

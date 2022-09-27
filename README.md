@@ -15,6 +15,9 @@ pnpm i
 
 # 启用开发
 pnpm dev:react
+
+# 运行 DEMO 项目
+pnpm demo
 ```
 
 ## 测试
