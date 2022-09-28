@@ -38,7 +38,7 @@ describe('ShadowRender test', () => {
     render(<ShadowRender htmlContent="<h1>Hello</h1>" ref={ref} />);
 
     await waitFor(() => screen.findByShadowText('Hello'));
-    expect(ref.current!.getContentDOM().innerHTML).toBe('<h1>Hello</h1>');
+    expect(ref.current!.getContentDOM().innerHTML).toBe('<div><h1>Hello</h1></div>');
   });
 
   test('set dynamic styles ok', async () => {
