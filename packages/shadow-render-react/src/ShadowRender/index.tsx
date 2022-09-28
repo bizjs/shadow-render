@@ -78,11 +78,16 @@ export const ShadowRender = forwardRef<ShadowRenderRef, PropsWithChildren<Shadow
     return needRenderByReact ? children : <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
   }, [htmlContent, children]);
 
+  // 缓存 create portal result
+  const portalResult = useMemo(() => {
+    return contentContainer ? createPortal(finalChildren, contentContainer!) : null;
+  }, [contentContainer, finalChildren]);
+
   const divClass = `${ROOT_CLASS} ${className || ''}`;
 
   return (
     <div className={divClass} ref={rootDivRef}>
-      {contentContainer ? createPortal(finalChildren, contentContainer!) : null}
+      {portalResult}
     </div>
   );
 });
